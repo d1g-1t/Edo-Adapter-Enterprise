@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 from typing import Literal
 
@@ -60,9 +61,20 @@ class Settings(BaseSettings):
     access_token_ttl_minutes: int = 30
     refresh_token_ttl_days: int = 14
 
-    cors_allow_origins: list[str] = Field(
-        default_factory=lambda: ["http://localhost:3099", "http://localhost:8099"]
+    cors_allow_origins_raw: str = Field(
+        default="http://localhost:3099,http://localhost:8099",
+        validation_alias="CORS_ALLOW_ORIGINS",
     )
+
+    @property
+    def cors_allow_origins(self) -> list[str]:
+        value = self.cors_allow_origins_raw.strip()
+        if not value:
+            return []
+        if value.startswith("["):
+            parsed = json.loads(value)
+            return [str(origin).strip() for origin in parsed if str(origin).strip()]
+        return [origin.strip() for origin in value.split(",") if origin.strip()]
 
     otel_exporter_otlp_endpoint: str = "http://localhost:4399"
     otel_service_name: str = "edo-adapter-api"
