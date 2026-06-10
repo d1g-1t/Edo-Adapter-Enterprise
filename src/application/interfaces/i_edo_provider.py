@@ -62,9 +62,11 @@ class IEDOProvider(ABC):
         file_bytes: bytes,
         metadata: dict[str, Any],
     ) -> SendResult:
+        raise NotImplementedError
 
     @abstractmethod
     async def get_document_status(self, provider_document_id: str) -> StatusResult:
+        raise NotImplementedError
 
     @abstractmethod
     async def poll_incoming(
@@ -73,16 +75,20 @@ class IEDOProvider(ABC):
         since: datetime | None = None,
         limit: int = 100,
     ) -> list[IncomingDocumentData]:
+        raise NotImplementedError
 
     @abstractmethod
     async def validate_webhook(
         self, payload: bytes, headers: dict[str, str]
     ) -> bool:
+        raise NotImplementedError
 
     @abstractmethod
     async def parse_webhook(
         self, payload: dict[str, Any]
     ) -> WebhookParseResult:
+        raise NotImplementedError
 
     @abstractmethod
     async def health_check(self) -> tuple[bool, int]:
+        raise NotImplementedError
