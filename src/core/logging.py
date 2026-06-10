@@ -10,7 +10,7 @@ from structlog.types import EventDict
 from src.core.config import get_settings
 
 
-def _mask_sensitive(event_dict: EventDict, **_: Any) -> EventDict:
+def _mask_sensitive(_: Any, __: str, event_dict: EventDict) -> EventDict:
     sensitive = {"password", "token", "secret", "credential", "authorization", "hashed_password"}
     for key in list(event_dict.keys()):
         if any(s in key.lower() for s in sensitive):
