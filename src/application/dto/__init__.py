@@ -8,9 +8,12 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any, Generic, Literal, TypeVar
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
+
+
+TItem = TypeVar("TItem")
 
 
 # ── Provider Account DTOs ──────────────────────────────────────────────────
@@ -203,10 +206,10 @@ class AuditEventResponse(BaseModel):
 
 # ── Pagination ─────────────────────────────────────────────────────────────
 
-class PaginatedResponse(BaseModel):
+class PaginatedResponse(BaseModel, Generic[TItem]):
     """Generic paginated envelope."""
 
-    items: list[Any]
+    items: list[TItem]
     total: int
     offset: int
     limit: int

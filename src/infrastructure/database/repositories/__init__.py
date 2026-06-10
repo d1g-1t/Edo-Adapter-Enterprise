@@ -14,7 +14,6 @@ from datetime import datetime
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from src.domain.entities.audit_event import AuditEvent
 from src.domain.entities.dlq_entry import DLQEntry
@@ -79,7 +78,7 @@ def _document_to_entity(m: EdoDocumentModel) -> EdoDocument:
         file_name=m.file_name,
         mime_type=m.mime_type,
         file_checksum=m.file_checksum,
-        metadata=m.metadata or {},
+        metadata=m.metadata_ or {},
         created_by=m.created_by,
         created_at=m.created_at,
     )
@@ -121,7 +120,7 @@ class SQLDocumentRepository(IDocumentRepository):
             file_name=document.file_name,
             mime_type=document.mime_type,
             file_checksum=document.file_checksum,
-            metadata=document.metadata,
+                metadata_=document.metadata,
             created_by=document.created_by,
             created_at=document.created_at,
         )
@@ -233,9 +232,9 @@ class SQLDeliveryRepository(IDeliveryRepository):
         stmt = select(DocumentDeliveryModel).where(
             DocumentDeliveryModel.unified_status.in_(non_final)
         )
-        if provider_account_id:
+        if provider_account_id is not None:
             stmt = stmt.where(
-                DocumentDeliveryModel.provider_account_id == provider_account_id
+                DocumentDeliveryModel.provider_account_id == provider_account_id  # type: ignore[operator]
             )
         stmt = stmt.limit(limit)
         rows = (await self._session.execute(stmt)).scalars().all()

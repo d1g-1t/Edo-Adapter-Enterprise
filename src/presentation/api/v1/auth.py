@@ -1,20 +1,17 @@
 from __future__ import annotations
 
 import uuid
-from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from passlib.context import CryptContext
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.dto import LoginRequest, RefreshRequest, TokenResponse, UserResponse
 from src.core.security import create_access_token, create_refresh_token, decode_token
 from src.infrastructure.database.models import ApiUserModel
+from src.infrastructure.security.password_hasher import verify_password
 from src.presentation.deps import AuthUser, DBSession
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-_pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 @router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
@@ -24,7 +21,7 @@ async def login(body: LoginRequest, db: DBSession) -> TokenResponse:
         ApiUserModel.is_active.is_(True),
     )
     user = (await db.execute(stmt)).scalar_one_or_none()
-    if not user or not _pwd_ctx.verify(body.password, user.hashed_password):
+    if not user or not verify_password(body.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
