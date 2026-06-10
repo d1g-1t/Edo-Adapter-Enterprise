@@ -1,0 +1,120 @@
+{
+  "title": "EDO Adapter Enterprise",
+  "uid": "edo-adapter-main",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Documents Sent (total)",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(edo_document_send_total)",
+          "legendFormat": "Total"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Send Success Rate",
+      "type": "stat",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(edo_document_send_total{status='success'}[5m])) / sum(rate(edo_document_send_total[5m]))",
+          "legendFormat": "Success %"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "DLQ Size",
+      "type": "stat",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "edo_deliveries_in_dlq",
+          "legendFormat": "DLQ"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "value": 0, "color": "green" },
+              { "value": 10, "color": "yellow" },
+              { "value": 50, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Provider Health",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "edo_provider_health_status",
+          "legendFormat": "{{provider}} / {{account_id}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Circuit Breaker State",
+      "type": "table",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "edo_circuit_breaker_state",
+          "legendFormat": "{{provider}} {{account_id}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Document Send Duration (p95)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 10, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.95, sum by (le, provider) (rate(edo_document_send_duration_seconds_bucket[5m])))",
+          "legendFormat": "p95 {{provider}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "id": 7,
+      "title": "Webhooks Received",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum by (provider) (rate(edo_webhook_received_total[5m]))",
+          "legendFormat": "{{provider}}"
+        }
+      ]
+    }
+  ]
+}
