@@ -25,32 +25,32 @@ celery_app.conf.update(
     worker_prefetch_multiplier=1,
     task_routes={
         "src.infrastructure.queue.tasks.send_document_task.*": {"queue": "edo.send"},
-        "src.infrastructure.queue.tasks.poll_incoming_task.*": {"queue": "edo.sync"},
-        "src.infrastructure.queue.tasks.sync_statuses_task.*": {"queue": "edo.sync"},
-        "src.infrastructure.queue.tasks.process_webhook_task.*": {"queue": "edo.webhooks"},
-        "src.infrastructure.queue.tasks.process_dlq_task.*": {"queue": "edo.dlq"},
-        "src.infrastructure.queue.tasks.provider_health_task.*": {"queue": "edo.health"},
-        "src.infrastructure.queue.tasks.cleanup_idempotency_task.*": {"queue": "edo.health"},
+        "edo.poll_incoming": {"queue": "edo.sync"},
+        "edo.sync_statuses": {"queue": "edo.sync"},
+        "edo.process_webhook": {"queue": "edo.webhooks"},
+        "edo.process_dlq": {"queue": "edo.dlq"},
+        "edo.provider_health": {"queue": "edo.health"},
+        "edo.cleanup_idempotency": {"queue": "edo.health"},
     },
     beat_schedule={
         "sync-statuses-every-2min": {
-            "task": "src.infrastructure.queue.tasks.sync_statuses_task.sync_statuses",
+            "task": "edo.sync_statuses",
             "schedule": 120.0,
         },
         "poll-incoming-every-5min": {
-            "task": "src.infrastructure.queue.tasks.poll_incoming_task.poll_incoming",
+            "task": "edo.poll_incoming",
             "schedule": 300.0,
         },
         "provider-health-every-1min": {
-            "task": "src.infrastructure.queue.tasks.provider_health_task.check_provider_health",
+            "task": "edo.provider_health",
             "schedule": 60.0,
         },
         "cleanup-idempotency-daily": {
-            "task": "src.infrastructure.queue.tasks.cleanup_idempotency_task.cleanup_idempotency",
+            "task": "edo.cleanup_idempotency",
             "schedule": crontab(hour=2, minute=0),
         },
         "process-dlq-every-10min": {
-            "task": "src.infrastructure.queue.tasks.process_dlq_task.process_dlq",
+            "task": "edo.process_dlq",
             "schedule": 600.0,
         },
     },

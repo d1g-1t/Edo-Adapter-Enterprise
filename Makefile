@@ -16,7 +16,7 @@ setup:
 	@echo "→ Installing dependencies..."
 	.venv/Scripts/pip install -e ".[dev]"
 	@echo "→ Copying .env..."
-	@if not exist .env copy .env.example .env
+	@powershell -Command "if (-not (Test-Path .env)) { Copy-Item .env.example .env }"
 	@echo "→ Starting full stack (API, Worker, Postgres, Redis, Grafana, ...)..."
 	$(COMPOSE) up -d
 	@echo "→ Waiting for Postgres to be ready..."
@@ -122,7 +122,7 @@ dev-worker:
 # ─────────────────────────────────────────────────────────────────────────────
 clean:
 	$(COMPOSE) down -v
-	@if exist .venv rmdir /s /q .venv
-	@if exist .pytest_cache rmdir /s /q .pytest_cache
-	@if exist htmlcov rmdir /s /q htmlcov
+	@powershell -Command "if (Test-Path .venv) { Remove-Item -Recurse -Force .venv }"
+	@powershell -Command "if (Test-Path .pytest_cache) { Remove-Item -Recurse -Force .pytest_cache }"
+	@powershell -Command "if (Test-Path htmlcov) { Remove-Item -Recurse -Force htmlcov }"
 	@echo "✓ Cleaned"
