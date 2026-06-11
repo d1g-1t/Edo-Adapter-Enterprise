@@ -1,0 +1,13 @@
+{
+  "internal_id": "INV-2025-001",
+  "document_type": "invoice",
+  "sender_inn": "7704340310",
+  "receiver_inn": "771234567890",
+  "extra_meta": {
+    "invoice_number": "INV-2025-001",
+    "invoice_date": "2025-01-15",
+    "total_amount": 150000.00,
+    "currency": "RUB",
+    "description": "Услуги по разработке ПО за январь 2025"
+  }
+}

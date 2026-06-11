@@ -1,0 +1,8 @@
+{
+  "provider_type": "stub",
+  "display_name": "Test Stub Account",
+  "credentials": {
+    "api_key": "stub-key-for-dev",
+    "simulate_latency_ms": 50
+  }
+}
